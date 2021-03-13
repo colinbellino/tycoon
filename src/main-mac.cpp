@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <SDL2/SDL.h>
 
 #include "main.h"
 
@@ -71,8 +70,9 @@ int main()
    bool quit = false;
 
 #if HOT_RELOAD
-   time_t lastModified = 0;
-   time_t lastReload = 0;
+   time_t now = time(0);
+   time_t lastModified = now;
+   time_t lastReload = now;
 
    printf("Starting game (with hot-reload).\n");
    game = loadGameCode();
@@ -90,7 +90,7 @@ int main()
       quit = game.update(&memory);
 
 #if HOT_RELOAD
-      time_t now = time(0);
+      now = time(0);
       lastModified = getFileCreationTime(gamePath);
       // printTime("lastModified -> ", lastModified);
       // printTime("lastReload -> ", lastReload);
@@ -100,7 +100,7 @@ int main()
       {
          printf("Reloading game code.\n");
          unloadGameCode(&game);
-         usleep(100 * 1000);
+         usleep(100 * 5000);
          game = loadGameCode();
 
          if (game.isValid == false)
