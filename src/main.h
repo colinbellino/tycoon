@@ -4,6 +4,12 @@
 
 #include "game.h"
 
+GAME_START(gameStartStub)
+{
+    printf("Using stub for game.start()\n");
+    return 1;
+}
+
 GAME_UPDATE(gameUpdateStub)
 {
     printf("Using stub for game.update()\n");
@@ -13,8 +19,8 @@ GAME_UPDATE(gameUpdateStub)
 typedef struct
 {
     void *handle;
+    GameStart *start;
     GameUpdate *update;
-    // GameInit *init;
     bool isValid;
 } GameCode;
 

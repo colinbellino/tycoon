@@ -16,9 +16,11 @@ typedef struct
     //  DebugPlatformWriteToFile *writeToFile;
 } GameMemory;
 
+#define GAME_START(name) int name()
+typedef GAME_START(GameStart);
+
 #define GAME_UPDATE(name) int name(GameMemory *memory)
 typedef GAME_UPDATE(GameUpdate);
-// typedef void (*GameUpdate)(GameMemory *memory);
 
 #define GAME_H
 #endif

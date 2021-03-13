@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.js": "javascriptreact",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "ios": "cpp"
     }
 }

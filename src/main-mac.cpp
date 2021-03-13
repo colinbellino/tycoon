@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <SDL2/SDL.h>
 
 #include "main.h"
 
@@ -42,9 +43,9 @@ GameCode loadGameCode()
    }
 
    result.handle = handle;
-   // result.init = (GameInit *)dlsym(handle, "gameInit");
+   result.start = (GameStart *)dlsym(handle, "gameStart");
    result.update = (GameUpdate *)dlsym(handle, "gameUpdate");
-   result.isValid = (result.update != NULL);
+   result.isValid = (result.start != NULL && result.update != NULL);
 
    return result;
 }
@@ -57,7 +58,7 @@ void unloadGameCode(GameCode *gameCode)
       gameCode->handle = NULL;
    }
 
-   // gameCode->init = gameInitStub;
+   gameCode->start = gameStartStub;
    gameCode->update = gameUpdateStub;
    gameCode->isValid = false;
 }
@@ -74,15 +75,20 @@ int main()
    time_t lastReload = 0;
 
    printf("Starting game (with hot-reload).\n");
+   game = loadGameCode();
 #else
-   // game.init = gameInit;
+   game.start = gameStart;
    game.update = gameUpdate;
    game.isValid = true;
    printf("Starting game.\n");
 #endif
 
+   quit = game.start();
+
    while (quit == false)
    {
+      quit = game.update(&memory);
+
 #if HOT_RELOAD
       time_t now = time(0);
       lastModified = getFileCreationTime(gamePath);
@@ -96,11 +102,15 @@ int main()
          unloadGameCode(&game);
          usleep(100 * 1000);
          game = loadGameCode();
+
+         if (game.isValid == false)
+         {
+            quit = true;
+         }
+
          lastReload = now;
       }
 #endif
-
-      game.update(&memory);
    }
 
    return 0;
