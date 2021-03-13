@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "main.h"
 
@@ -66,7 +67,6 @@ void unloadGameCode(GameCode *gameCode)
 int main()
 {
    GameCode game = {};
-   GameMemory memory = {};
    bool quit = false;
 
 #if HOT_RELOAD
@@ -83,7 +83,16 @@ int main()
    printf("Starting game.\n");
 #endif
 
-   quit = game.start();
+   GameMemory memory = {};
+   int permanentStorageSize = megabytes(2);
+   memory.permanentStorage = malloc(permanentStorageSize);
+   memory.permanentStorageSize = permanentStorageSize;
+   // memory.readFromFile = macDebugPlatformReadEntireFile;
+   // memory.writeToFile = macDebugPlatformWriteEntireFile;
+
+   memory.isInitialized = true;
+
+   quit = game.start(&memory);
 
    while (quit == false)
    {
@@ -100,7 +109,6 @@ int main()
       {
          printf("Reloading game code.\n");
          unloadGameCode(&game);
-         usleep(100 * 5000);
          game = loadGameCode();
 
          if (game.isValid == false)
@@ -112,6 +120,9 @@ int main()
       }
 #endif
    }
+
+   printf("Exiting game.\n");
+   printf("=================================\n");
 
    return 0;
 }

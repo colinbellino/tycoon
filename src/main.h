@@ -4,13 +4,13 @@
 
 #include "game.h"
 
-GAME_START(gameStartStub)
+int gameStartStub(GameMemory *memory)
 {
     printf("Using stub for game.start()\n");
     return 1;
 }
 
-GAME_UPDATE(gameUpdateStub)
+int gameUpdateStub(GameMemory *memory)
 {
     printf("Using stub for game.update()\n");
     return 1;
@@ -23,6 +23,11 @@ typedef struct
     GameUpdate *update;
     bool isValid;
 } GameCode;
+
+#define kilobytes(value) ((value)*1024LL)
+#define megabytes(value) (kilobytes(value) * 1024LL)
+#define gigabytes(value) (megabytes(value) * 1024LL)
+#define terabytes(value) (gigabytes(Value) * 1024LL)
 
 #define MAIN_H
 #endif
