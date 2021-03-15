@@ -13,6 +13,14 @@
 #include "game.cpp"
 #endif
 
+typedef struct
+{
+   void *handle;
+   GameStart *start;
+   GameUpdate *update;
+   bool isValid;
+} MacGameCode;
+
 #if HOT_RELOAD
 const char *gamePath = "./build/game";
 
@@ -31,26 +39,25 @@ void printTime(const char *prefix, time_t time)
    date[0] = 0;
 }
 
-GameCode loadGameCode()
+MacGameCode loadGameCode()
 {
-   GameCode result = {};
+   MacGameCode result = {};
 
-   void *handle = dlopen(gamePath, RTLD_LAZY);
-   if (!handle)
+   result.handle = dlopen(gamePath, RTLD_LAZY);
+   if (!result.handle)
    {
       fprintf(stderr, "Error: %s\n", dlerror());
       return result;
    }
 
-   result.handle = handle;
-   result.start = (GameStart *)dlsym(handle, "gameStart");
-   result.update = (GameUpdate *)dlsym(handle, "gameUpdate");
+   result.start = (GameStart *)dlsym(result.handle, "gameStart");
+   result.update = (GameUpdate *)dlsym(result.handle, "gameUpdate");
    result.isValid = (result.start != NULL && result.update != NULL);
 
    return result;
 }
 
-void unloadGameCode(GameCode *gameCode)
+void unloadGameCode(MacGameCode *gameCode)
 {
    if (gameCode->handle)
    {
@@ -66,7 +73,7 @@ void unloadGameCode(GameCode *gameCode)
 
 int main()
 {
-   GameCode game = {};
+   MacGameCode game = {};
    bool quit = false;
 
 #if HOT_RELOAD

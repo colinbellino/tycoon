@@ -1,8 +1,14 @@
 #if !defined(MAIN_H)
 
 #include <stdio.h>
+#include <time.h>
 
 #include "game.h"
+
+#define kilobytes(value) ((value)*1024LL)
+#define megabytes(value) (kilobytes(value) * 1024LL)
+#define gigabytes(value) (megabytes(value) * 1024LL)
+#define terabytes(value) (gigabytes(Value) * 1024LL)
 
 int gameStartStub(GameMemory *memory)
 {
@@ -16,18 +22,13 @@ int gameUpdateStub(GameMemory *memory)
     return 1;
 }
 
-typedef struct
+void printTime(const char *prefix, time_t time)
 {
-    void *handle;
-    GameStart *start;
-    GameUpdate *update;
-    bool isValid;
-} GameCode;
-
-#define kilobytes(value) ((value)*1024LL)
-#define megabytes(value) (kilobytes(value) * 1024LL)
-#define gigabytes(value) (megabytes(value) * 1024LL)
-#define terabytes(value) (gigabytes(Value) * 1024LL)
+    char date[18];
+    strftime(date, 18, "%d-%m-%y %H:%M:%S", gmtime(&time));
+    printf("%s%s\n", prefix, date);
+    date[0] = 0;
+}
 
 #define MAIN_H
 #endif

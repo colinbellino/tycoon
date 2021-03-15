@@ -1,21 +1,21 @@
 # sdl2 cmake project-config input for ./configure scripts
 
-set(prefix "/usr/local/Cellar/sdl2/2.0.14_1") 
+set(prefix "/opt/local/x86_64-w64-mingw32") 
 set(exec_prefix "${prefix}")
 set(libdir "${exec_prefix}/lib")
-set(SDL2_PREFIX "/usr/local/Cellar/sdl2/2.0.14_1")
-set(SDL2_EXEC_PREFIX "/usr/local/Cellar/sdl2/2.0.14_1")
+set(SDL2_PREFIX "/opt/local/x86_64-w64-mingw32")
+set(SDL2_EXEC_PREFIX "/opt/local/x86_64-w64-mingw32")
 set(SDL2_LIBDIR "${exec_prefix}/lib")
 set(SDL2_INCLUDE_DIRS "${prefix}/include/SDL2")
-set(SDL2_LIBRARIES "-L${SDL2_LIBDIR}  -lSDL2")
+set(SDL2_LIBRARIES "-L${SDL2_LIBDIR}  -lmingw32 -lSDL2main -lSDL2 -mwindows")
 string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 
 if(NOT TARGET SDL2::SDL2)
   # Remove -lSDL2 as that is handled by CMake, note the space at the end so it does not replace e.g. -lSDL2main
   # This may require "libdir" beeing set (from above)
-  string(REPLACE "-lSDL2 " "" SDL2_EXTRA_LINK_FLAGS " -lSDL2 ")
+  string(REPLACE "-lSDL2 " "" SDL2_EXTRA_LINK_FLAGS " -lmingw32 -lSDL2main -lSDL2 -mwindows ")
   string(STRIP "${SDL2_EXTRA_LINK_FLAGS}" SDL2_EXTRA_LINK_FLAGS)
-  string(REPLACE "-lSDL2 " "" SDL2_EXTRA_LINK_FLAGS_STATIC " -lm -liconv  -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-weak_framework,CoreHaptics -Wl,-weak_framework,GameController -Wl,-framework,ForceFeedback -lobjc -Wl,-framework,CoreVideo -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,IOKit -Wl,-weak_framework,QuartzCore -Wl,-weak_framework,Metal ")
+  string(REPLACE "-lSDL2 " "" SDL2_EXTRA_LINK_FLAGS_STATIC " -Wl,--no-undefined -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -static-libgcc ")
   string(STRIP "${SDL2_EXTRA_LINK_FLAGS_STATIC}" SDL2_EXTRA_LINK_FLAGS_STATIC)
 
   add_library(SDL2::SDL2 SHARED IMPORTED)
