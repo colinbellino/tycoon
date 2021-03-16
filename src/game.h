@@ -16,6 +16,17 @@ typedef struct
     //  DebugPlatformWriteToFile *writeToFile;
 } GameMemory;
 
+// TODO: Don't use SDL directly inside the game code
+typedef struct
+{
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDL_Surface *screenSurface;
+    SDL_Texture *texture;
+
+    int debug;
+} GameState;
+
 #define GAME_START(name) int name(GameMemory *memory)
 typedef GAME_START(GameStart);
 
