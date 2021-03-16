@@ -1,7 +1,6 @@
 set -e
 mkdir -p ./build/
 
-sdlPath="D:/Dev/c-libs/SDL2"
 hotReload=0
 run=0
 
@@ -21,8 +20,7 @@ if [ $hotReload == 1 ]; then
 fi
 
 echo "Building main..."
-# TODO: Use sdlPath param
-gcc ./src/main-win.cpp -o ./build/main -Wall -g -I ./include/win64 -L ./lib/win64 -lmingw32 -lSDL2main -lSDL2 -mwindows -D HOT_RELOAD=$hotReload
+gcc ./src/main-win.cpp -o ./build/main -Wall -g -I ./include/win64/** -L ./lib/win64/** -lmingw32 -lSDL2main -lSDL2 -mwindows -D HOT_RELOAD=$hotReload
 echo "============================================";
 
 if [ $run == 1 ]; then

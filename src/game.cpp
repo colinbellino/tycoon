@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "game.h"
 
@@ -26,7 +26,6 @@ extern "C" int gameUpdate(GameMemory *memory)
     rect.y = rand() % 500;
     rect.w = 100;
     rect.h = 50;
-    // printf("= %d %d\n", rect.x, rect.y);
 
     SDL_SetRenderTarget(gameState->renderer, gameState->texture);
     SDL_SetRenderDrawColor(gameState->renderer, 0x00, 0x00, 0x00, 0x00);
