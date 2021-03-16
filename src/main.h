@@ -10,6 +10,10 @@
 #define gigabytes(value) (megabytes(value) * 1024LL)
 #define terabytes(value) (gigabytes(Value) * 1024LL)
 
+#define print(...)       \
+    printf(__VA_ARGS__); \
+    fflush(stdout);
+
 int gameStartStub(GameMemory *memory)
 {
     printf("Using stub for game.start()\n");

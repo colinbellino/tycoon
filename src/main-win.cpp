@@ -25,10 +25,6 @@ typedef struct
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 450;
 
-#define print(...)       \
-    printf(__VA_ARGS__); \
-    fflush(stdout);
-
 #if HOT_RELOAD
 time_t now = time(0);
 time_t lastModified = now;
