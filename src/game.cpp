@@ -32,7 +32,7 @@ extern "C" int gameUpdate(GameMemory *memory)
     SDL_RenderClear(gameState->renderer);
     SDL_RenderDrawRect(gameState->renderer, &rect);
 
-    SDL_SetRenderDrawColor(gameState->renderer, 0xFF, 0x00, 0x00, 0x00);
+    SDL_SetRenderDrawColor(gameState->renderer, 0xFF, 0xFF, 0x00, 0x00);
     SDL_RenderFillRect(gameState->renderer, &rect);
     SDL_SetRenderTarget(gameState->renderer, NULL);
     SDL_RenderCopy(gameState->renderer, gameState->texture, NULL, NULL);

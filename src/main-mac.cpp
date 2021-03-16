@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <dirent.h>
 #include <SDL2/SDL.h>
 
 #include "main.h"
@@ -26,13 +27,55 @@ const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 450;
 
 #if HOT_RELOAD
+time_t now = time(0);
+time_t lastModified = now;
+time_t lastReload = now;
+
 const char *gamePath = "./build/game.o";
+const char *sourcePath = "./src/";
 
 time_t getFileCreationTime(const char *filePath)
 {
    struct stat attrib;
    stat(filePath, &attrib);
    return attrib.st_ctime;
+}
+
+bool gameChanged()
+{
+   now = time(0);
+   DIR *directory = opendir(sourcePath);
+   struct dirent *entry;
+   struct stat info;
+
+   if (directory == NULL)
+   {
+      fprintf(stderr, "Could not open source directory.\n");
+      return false;
+   }
+
+   while ((entry = readdir(directory)) != NULL)
+   {
+      char buffer[1024];
+      strcpy(buffer, sourcePath);
+      strcat(buffer, entry->d_name);
+
+      if (stat(buffer, &info) == -1)
+      {
+         // perror(buffer);
+         continue;
+      }
+
+      // print("%30s\n", ctime(&info.st_mtime));
+      if (info.st_mtime > lastReload)
+      {
+         // print("%20s\n", file->d_name);
+         return true;
+      }
+   }
+
+   closedir(directory);
+   return false;
 }
 
 MacGameCode loadGameCode()
@@ -126,83 +169,83 @@ int main()
       {
          if (event.type == SDL_QUIT)
          {
-            return 1;
+            quit = true;
          }
          if (event.type == SDL_WINDOWEVENT)
          {
-            switch (event.window.event)
-            {
-            case SDL_WINDOWEVENT_SHOWN:
-               SDL_Log("Window %d shown", event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_HIDDEN:
-               SDL_Log("Window %d hidden", event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_EXPOSED:
-               SDL_Log("Window %d exposed", event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_MOVED:
-               SDL_Log("Window %d moved to %d,%d",
-                       event.window.windowID, event.window.data1,
-                       event.window.data2);
-               break;
-            case SDL_WINDOWEVENT_RESIZED:
-               SDL_Log("Window %d resized to %dx%d",
-                       event.window.windowID, event.window.data1,
-                       event.window.data2);
-               break;
-            case SDL_WINDOWEVENT_SIZE_CHANGED:
-               SDL_Log("Window %d size changed to %dx%d",
-                       event.window.windowID, event.window.data1,
-                       event.window.data2);
-               break;
-            case SDL_WINDOWEVENT_MINIMIZED:
-               SDL_Log("Window %d minimized", event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_MAXIMIZED:
-               SDL_Log("Window %d maximized", event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_RESTORED:
-               SDL_Log("Window %d restored", event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_ENTER:
-               SDL_Log("Mouse entered window %d",
-                       event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_LEAVE:
-               SDL_Log("Mouse left window %d", event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_FOCUS_GAINED:
-               SDL_Log("Window %d gained keyboard focus",
-                       event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_FOCUS_LOST:
-               SDL_Log("Window %d lost keyboard focus",
-                       event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_CLOSE:
-               SDL_Log("Window %d closed", event.window.windowID);
-               break;
-#if SDL_VERSION_ATLEAST(2, 0, 5)
-            case SDL_WINDOWEVENT_TAKE_FOCUS:
-               SDL_Log("Window %d is offered a focus", event.window.windowID);
-               break;
-            case SDL_WINDOWEVENT_HIT_TEST:
-               SDL_Log("Window %d has a special hit test", event.window.windowID);
-               break;
-#endif
-            default:
-               SDL_Log("Window %d got unknown event %d",
-                       event.window.windowID, event.window.event);
-               break;
-            }
+            //             switch (event.window.event)
+            //             {
+            //             case SDL_WINDOWEVENT_SHOWN:
+            //                SDL_Log("Window %d shown", event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_HIDDEN:
+            //                SDL_Log("Window %d hidden", event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_EXPOSED:
+            //                SDL_Log("Window %d exposed", event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_MOVED:
+            //                SDL_Log("Window %d moved to %d,%d",
+            //                        event.window.windowID, event.window.data1,
+            //                        event.window.data2);
+            //                break;
+            //             case SDL_WINDOWEVENT_RESIZED:
+            //                SDL_Log("Window %d resized to %dx%d",
+            //                        event.window.windowID, event.window.data1,
+            //                        event.window.data2);
+            //                break;
+            //             case SDL_WINDOWEVENT_SIZE_CHANGED:
+            //                SDL_Log("Window %d size changed to %dx%d",
+            //                        event.window.windowID, event.window.data1,
+            //                        event.window.data2);
+            //                break;
+            //             case SDL_WINDOWEVENT_MINIMIZED:
+            //                SDL_Log("Window %d minimized", event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_MAXIMIZED:
+            //                SDL_Log("Window %d maximized", event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_RESTORED:
+            //                SDL_Log("Window %d restored", event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_ENTER:
+            //                SDL_Log("Mouse entered window %d",
+            //                        event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_LEAVE:
+            //                SDL_Log("Mouse left window %d", event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_FOCUS_GAINED:
+            //                SDL_Log("Window %d gained keyboard focus",
+            //                        event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_FOCUS_LOST:
+            //                SDL_Log("Window %d lost keyboard focus",
+            //                        event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_CLOSE:
+            //                SDL_Log("Window %d closed", event.window.windowID);
+            //                break;
+            // #if SDL_VERSION_ATLEAST(2, 0, 5)
+            //             case SDL_WINDOWEVENT_TAKE_FOCUS:
+            //                SDL_Log("Window %d is offered a focus", event.window.windowID);
+            //                break;
+            //             case SDL_WINDOWEVENT_HIT_TEST:
+            //                SDL_Log("Window %d has a special hit test", event.window.windowID);
+            //                break;
+            // #endif
+            //             default:
+            //                SDL_Log("Window %d got unknown event %d",
+            //                        event.window.windowID, event.window.event);
+            //                break;
+            //             }
          }
          else if (event.type == SDL_KEYDOWN)
          {
             switch (event.key.keysym.sym)
             {
             case SDLK_SPACE:
-               printf("space\n");
+               print("space pressed!\n");
                break;
             }
          }
@@ -213,19 +256,19 @@ int main()
       }
 
 #if HOT_RELOAD
-      // if (lastModified > lastReload)
-      // {
-      //    printf("Reloading game code.\n");
-      //    unloadGameCode(&game);
-      //    game = loadGameCode();
+      if (gameChanged())
+      {
+         system("./build-game-mac.sh");
+         // For some reason, we need a short sleep after the task is done.
+         usleep(1 * 1000);
 
-      //    if (game.isValid == false)
-      //    {
-      //       quit = true;
-      //    }
+         print("Reloading game code.\n");
+         unloadGameCode(&game);
+         game = loadGameCode();
 
-      //    lastReload = now;
-      // }
+         quit = !game.isValid;
+         lastReload = now;
+      }
 #endif
    }
 
