@@ -22,7 +22,8 @@ typedef struct
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Surface *screenSurface;
-    SDL_Texture *texture;
+    SDL_Texture *rectTexture;
+    SDL_Texture *spriteTexture;
 
     int debug;
 } GameState;

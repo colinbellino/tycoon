@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include "main.h"
 
@@ -23,8 +24,28 @@ typedef struct
    bool isValid;
 } MacGameCode;
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 450;
+SDL_Texture *loadTexture(const char *path, SDL_Renderer *renderer)
+{
+   SDL_Texture *newTexture = NULL;
+
+   SDL_Surface *loadedSurface = IMG_Load(path);
+   if (loadedSurface == NULL)
+   {
+      printf("Unable to load image %s! SDL_image Error: %s\n", path, IMG_GetError());
+   }
+   else
+   {
+      newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+      if (newTexture == NULL)
+      {
+         printf("Unable to create texture from %s! SDL Error: %s\n", path, SDL_GetError());
+      }
+
+      SDL_FreeSurface(loadedSurface);
+   }
+
+   return newTexture;
+}
 
 #if HOT_RELOAD
 time_t now = time(0);
@@ -33,6 +54,7 @@ time_t lastReload = now;
 
 const char *gamePath = "./build/game.o";
 const char *sourcePath = "./src/";
+const char *buildCommand = "./build-game-mac.sh";
 
 time_t getFileCreationTime(const char *filePath)
 {
@@ -112,9 +134,11 @@ void unloadGameCode(MacGameCode *gameCode)
 
 int main()
 {
+   const int WINDOW_WIDTH = 800;
+   const int WINDOW_HEIGHT = 450;
+   bool quit = false;
    MacGameCode game = {};
    GameMemory memory = {};
-   bool quit = false;
 
 #if HOT_RELOAD
    print("Starting game (with hot-reload).\n");
@@ -126,37 +150,44 @@ int main()
    print("Starting game.\n");
 #endif
 
+   int permanentStorageSize = megabytes(2);
+   memory.isInitialized = true;
+   memory.permanentStorage = SDL_malloc(permanentStorageSize);
+   memory.permanentStorageSize = permanentStorageSize;
+
+   GameState *gameState = (GameState *)memory.permanentStorage;
+
+   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
    {
-      int permanentStorageSize = megabytes(2);
-      memory.isInitialized = true;
-      memory.permanentStorage = malloc(permanentStorageSize);
-      memory.permanentStorageSize = permanentStorageSize;
-
-      GameState *gameState = (GameState *)memory.permanentStorage;
-
-      if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-      {
-         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-         return 1;
-      }
-
-      gameState->window = SDL_CreateWindow(
-          "Tycoon",
-          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-          SCREEN_WIDTH, SCREEN_HEIGHT,
-          SDL_WINDOW_SHOWN | SDL_WINDOW_ALWAYS_ON_TOP);
-      if (gameState->window == NULL)
-      {
-         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-         return 1;
-      }
-
-      gameState->renderer = SDL_CreateRenderer(gameState->window, -1, SDL_RENDERER_ACCELERATED);
-      gameState->screenSurface = SDL_GetWindowSurface(gameState->window);
-      gameState->texture = SDL_CreateTexture(gameState->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1024, 768);
-
-      SDL_SetWindowOpacity(gameState->window, 0.5f);
+      printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+      return 1;
    }
+
+   SDL_DisplayMode displayMode;
+   SDL_GetCurrentDisplayMode(0, &displayMode);
+
+   gameState->window = SDL_CreateWindow(
+       "Tycoon",
+       displayMode.w - WINDOW_WIDTH, 0,
+       WINDOW_WIDTH, WINDOW_HEIGHT,
+       SDL_WINDOW_SHOWN | SDL_WINDOW_ALWAYS_ON_TOP);
+   if (gameState->window == NULL)
+   {
+      printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+      return 1;
+   }
+
+   gameState->renderer = SDL_CreateRenderer(gameState->window, -1, SDL_RENDERER_ACCELERATED);
+   gameState->screenSurface = SDL_GetWindowSurface(gameState->window);
+   gameState->rectTexture = SDL_CreateTexture(gameState->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
+   gameState->spriteTexture = loadTexture("media/smile.png", gameState->renderer);
+   if (gameState->spriteTexture == NULL)
+   {
+      printf("Failed to load texture image!\n");
+      return 1;
+   }
+
+   SDL_SetWindowOpacity(gameState->window, 0.5f);
 
    quit = game.start(&memory);
 
@@ -258,7 +289,7 @@ int main()
 #if HOT_RELOAD
       if (gameChanged())
       {
-         system("./build-game-mac.sh");
+         system(buildCommand);
          // For some reason, we need a short sleep after the task is done.
          usleep(1 * 1000);
 

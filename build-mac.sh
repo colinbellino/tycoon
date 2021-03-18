@@ -20,7 +20,13 @@ if [ $hotReload == 1 ]; then
 fi
 
 echo "Building main..."
-gcc ./src/main-mac.cpp -o ./build/main -Wall -g -I ./include/mac/** -L ./lib/mac/** -l SDL2-2.0.0 -D HOT_RELOAD=$hotReload
+gcc ./src/main-mac.cpp -o ./build/main \
+    -Wall \
+    -g \
+    -I ./include/mac/** \
+    -L ./lib/mac/** \
+    -l SDL2 -l SDL2_image \
+    -D HOT_RELOAD=$hotReload
 echo "=================================";
 
 if [ $run == 1 ]; then
