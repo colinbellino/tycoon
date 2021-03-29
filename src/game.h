@@ -34,5 +34,12 @@ typedef GAME_START(GameStart);
 #define GAME_UPDATE(name) int name(GameMemory *memory)
 typedef GAME_UPDATE(GameUpdate);
 
+extern "C" int gameStart(GameMemory *memory);
+extern "C" int gameUpdate(GameMemory *memory);
+
+#define print(...)       \
+    printf(__VA_ARGS__); \
+    fflush(stdout);
+
 #define GAME_H
 #endif

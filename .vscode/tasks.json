@@ -4,7 +4,15 @@
         {
             "label": "build & run (mac)",
             "type": "shell",
-            "command": "./build-mac.sh --run"
+            "command": "make build run"
+        },
+        {
+            "label": "watch & run (mac)",
+            "type": "shell",
+            "command": "make dev run",
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ]
 }
