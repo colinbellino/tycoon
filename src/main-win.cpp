@@ -10,8 +10,6 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
-#else
-#include "game.cpp"
 #endif
 
 typedef struct
@@ -30,8 +28,8 @@ time_t now = time(0);
 time_t lastModified = now;
 time_t lastReload = now;
 
-const char *gamePath = "./build/game.dll";
-const char *gameCopyPath = "./build/game_tmp.dll";
+const char *gamePath = "./build/dyn/game.dll";
+const char *gameCopyPath = "./build/dyn/game_tmp.dll";
 const char *sourcePath = "./src/";
 
 time_t fileTimeToTime(FILETIME const &fileTime)
@@ -192,7 +190,7 @@ int main(int argv, char *args[])
 #if HOT_RELOAD
         if (gameChanged())
         {
-            system("build-game-win.bat");
+            system("make gamelib");
             // For some reason, we need a short sleep after the task is done.
             usleep(1 * 1000);
 
