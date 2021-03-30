@@ -25,6 +25,12 @@ typedef struct
     SDL_Texture *rectTexture;
     SDL_Texture *spriteTexture;
 
+    SDL_Texture *texture1;
+    SDL_Texture *texture2;
+
+    int windowWidth;
+    int windowHeight;
+
     int debug;
 } GameState;
 
