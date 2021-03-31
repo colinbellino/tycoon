@@ -2,23 +2,34 @@
 
 #include <stdint.h>
 
-typedef struct
+#include "memory.h"
+#include "utils.h"
+
+struct GameMemory
 {
     bool isInitialized;
 
     uint64_t permanentStorageSize;
-    void *permanentStorage;
+    void *permanentStorage; // REQUIRED to be cleared to zero at startup.
 
     uint64_t transientStorageSize;
-    void *transientStorage;
+    void *transientStorage; // REQUIRED to be cleared to zero at startup.
 
     //  DebugPlatformReadFromFile *readFromFile;
     //  DebugPlatformWriteToFile *writeToFile;
-} GameMemory;
+};
+
+struct World
+{
+    bool isOn;
+};
 
 // TODO: Don't use SDL directly inside the game code
-typedef struct
+struct GameState
 {
+    MemoryArena worldArena;
+    World *world;
+
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Surface *screenSurface;
@@ -30,14 +41,17 @@ typedef struct
 
     int windowWidth;
     int windowHeight;
+};
 
-    int debug;
-} GameState;
+struct GameInput
+{
+    bool spaceWasPressedThisFrame;
+};
 
 #define GAME_START(name) int name(GameMemory *memory)
 typedef GAME_START(GameStart);
 
-#define GAME_UPDATE(name) int name(GameMemory *memory)
+#define GAME_UPDATE(name) int name(GameMemory *memory, GameInput input)
 typedef GAME_UPDATE(GameUpdate);
 
 #define GAME_H

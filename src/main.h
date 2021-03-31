@@ -20,7 +20,7 @@ int gameStartStub(GameMemory *memory)
     return 1;
 }
 
-int gameUpdateStub(GameMemory *memory)
+int gameUpdateStub(GameMemory *memory, GameInput input)
 {
     printf("Using stub for game.update()\n");
     return 1;
