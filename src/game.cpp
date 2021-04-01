@@ -9,6 +9,7 @@ extern "C" int gameUpdate(GameMemory *memory, GameInput input, SDLStuff *sdl)
 
     if (!memory->isInitialized)
     {
+        print("Initializing game.\n");
         srand(time(NULL));
 
         initializeArena(
@@ -226,8 +227,6 @@ extern "C" int gameUpdate(GameMemory *memory, GameInput input, SDLStuff *sdl)
                 float MaxX = CenX + 0.5f * tileSizeInPixels;
                 float MaxY = CenY + 0.5f * tileSizeInPixels;
 
-                // DrawRectangle(Buffer, MinX, MinY, MaxX, MaxY, Gray, Gray, Gray);
-
                 SDL_Rect rect;
                 rect.w = tileSizeInPixels;
                 rect.h = tileSizeInPixels;
@@ -251,46 +250,6 @@ extern "C" int gameUpdate(GameMemory *memory, GameInput input, SDLStuff *sdl)
     }
 
     SDL_RenderPresent(sdl->renderer);
-
-    // {
-    //     SDL_Rect gameplayViewport;
-    //     gameplayViewport.x = 0;
-    //     gameplayViewport.y = 0;
-    //     gameplayViewport.w = gameState->windowWidth;
-    //     gameplayViewport.h = gameState->windowHeight;
-    //     SDL_RenderSetViewport(gameState->renderer, &gameplayViewport);
-    //     SDL_RenderCopy(gameState->renderer, gameState->spriteTexture, NULL, NULL);
-
-    //     SDL_Rect rect;
-    //     rect.w = 300;
-    //     rect.h = 200;
-    //     rect.x = (gameState->windowWidth / 2 - rect.w / 2);
-    //     rect.y = (gameState->windowHeight / 2 - rect.h / 2);
-    //     // rect.x = rand() % (gameState->windowWidth - rect.w);
-    //     // rect.y = rand() % (gameState->windowHeight - rect.h);
-
-    //     SDL_SetRenderTarget(gameState->renderer, gameState->rectTexture);
-
-    //     SDL_SetRenderDrawColor(gameState->renderer, 0x00, 0x00, 0x00, 0x00);
-    //     SDL_RenderClear(gameState->renderer);
-    //     SDL_RenderDrawRect(gameState->renderer, &rect);
-
-    //     if (gameState->world->isOn)
-    //     {
-    //         SDL_SetRenderDrawColor(gameState->renderer, 0x00, 0xFF, 0x00, 0x00);
-    //     }
-    //     else
-    //     {
-    //         SDL_SetRenderDrawColor(gameState->renderer, 0xFF, 0x00, 0x00, 0x00);
-    //     }
-
-    //     SDL_RenderFillRect(gameState->renderer, &rect);
-    //     SDL_SetRenderTarget(gameState->renderer, NULL);
-
-    //     SDL_RenderCopy(gameState->renderer, gameState->rectTexture, NULL, NULL);
-    // }
-
-    // SDL_RenderPresent(gameState->renderer);
 
     return 0;
 }

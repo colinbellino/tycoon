@@ -116,6 +116,9 @@ int main()
 {
     const int WINDOW_WIDTH = 800;
     const int WINDOW_HEIGHT = 450;
+    uint32_t ticksBefore = SDL_GetTicks();
+    uint32_t ticksAfter = SDL_GetTicks();
+    double delta = 0;
     bool quit = false;
     MacGameCode game = {};
     GameMemory memory = {};
@@ -168,7 +171,18 @@ int main()
 
     while (quit == false)
     {
-        quit = game.update(&memory, input, &sdl);
+        ticksBefore = SDL_GetTicks();
+        delta += ticksBefore - ticksAfter;
+
+        if (delta >= 1000 / 60.0)
+        {
+            print("FPS: %f\n", 1000 / delta);
+
+            quit = game.update(&memory, input, &sdl);
+            delta = 0;
+        }
+
+        ticksAfter = SDL_GetTicks();
 
         SDL_Event event;
         while (SDL_PollEvent(&event))
