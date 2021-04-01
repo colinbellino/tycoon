@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <SDL.h>
 
-#include "main.h"
+#include "game.h"
 
 #if HOT_RELOAD
 #include <sys/stat.h>
@@ -17,13 +17,15 @@
 typedef struct
 {
     HMODULE handle;
-    GameStart *start;
     GameUpdate *update;
     bool isValid;
 } WinGameCode;
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 450;
+int gameUpdateStub(GameMemory *memory, GameInput input, SDLStuff *sdl)
+{
+    printf("Using stub for game.update()\n");
+    return 1;
+}
 
 #if HOT_RELOAD
 time_t now = time(0);
@@ -135,16 +137,21 @@ void unloadGameCode(WinGameCode *gameCode)
 
 int main(int argv, char *args[])
 {
+    const int WINDOW_WIDTH = 960;
+    const int WINDOW_HEIGHT = 540;
+    uint32_t ticksBefore = SDL_GetTicks();
+    uint32_t ticksAfter = SDL_GetTicks();
+    double delta = 0;
     bool quit = false;
     WinGameCode game = {};
     GameMemory memory = {};
-    GameInput input;
+    SDLStuff sdl = {};
+    GameInput input = {};
 
 #if HOT_RELOAD
     print("Starting game (with hot-reload).\n");
     game = loadGameCode();
 #else
-    game.start = gameStart;
     game.update = gameUpdate;
     game.isValid = true;
     print("Starting game.\n");
@@ -162,30 +169,43 @@ int main(int argv, char *args[])
         return 1;
     }
 
-    gameState->window = SDL_CreateWindow(
+    SDL_DisplayMode displayMode;
+    SDL_GetCurrentDisplayMode(0, &displayMode);
+
+    gameState->windowWidth = WINDOW_WIDTH;
+    gameState->windowHeight = WINDOW_HEIGHT;
+
+    sdl.window = SDL_CreateWindow(
         "Tycoon",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        SCREEN_WIDTH, SCREEN_HEIGHT,
+        displayMode.w - WINDOW_WIDTH, 0,
+        WINDOW_WIDTH, WINDOW_HEIGHT,
         SDL_WINDOW_SHOWN | SDL_WINDOW_ALWAYS_ON_TOP);
-    if (gameState->window == NULL)
+    if (sdl.window == NULL)
     {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         return 1;
     }
 
-    // SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_PING, "0");
+    sdl.renderer = SDL_CreateRenderer(sdl.window, -1, SDL_RENDERER_ACCELERATED);
+    sdl.screenSurface = SDL_GetWindowSurface(sdl.window);
+    sdl.rectTexture = SDL_CreateTexture(sdl.renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    gameState->renderer = SDL_CreateRenderer(gameState->window, -1, SDL_RENDERER_ACCELERATED);
-    gameState->screenSurface = SDL_GetWindowSurface(gameState->window);
-    gameState->texture = SDL_CreateTexture(gameState->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1024, 768);
-
-    SDL_SetWindowOpacity(gameState->window, 0.5f);
-
-    quit = game.update(&memory, input);
+    SDL_SetWindowOpacity(sdl.window, 0.5f);
 
     while (quit == false)
     {
-        quit = game.update(&memory, input);
+        ticksBefore = SDL_GetTicks();
+        delta += ticksBefore - ticksAfter;
+
+        if (delta >= 1000 / 60.0)
+        {
+            print("FPS: %f\n", 1000 / delta);
+
+            quit = game.update(&memory, input, &sdl);
+            delta = 0;
+        }
+
+        ticksAfter = SDL_GetTicks();
 
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -205,8 +225,8 @@ int main(int argv, char *args[])
                     SDL_Log("Window %d resized to %dx%d",
                             event.window.windowID, event.window.data1,
                             event.window.data2);
+                    break;
                 }
-                break;
                 case SDL_WINDOWEVENT_SIZE_CHANGED:
                 {
                     gameState->windowWidth = event.window.data1;
@@ -214,12 +234,8 @@ int main(int argv, char *args[])
                     SDL_Log("Window %d size changed to %dx%d",
                             event.window.windowID, event.window.data1,
                             event.window.data2);
-                }
-                break;
-                default:
-                    SDL_Log("Window %d got unknown event %d",
-                            event.window.windowID, event.window.event);
                     break;
+                }
                 }
             }
             else if (event.type == SDL_KEYUP)
@@ -237,6 +253,9 @@ int main(int argv, char *args[])
                 {
                 case SDLK_SPACE:
                     input.spaceWasPressedThisFrame = true;
+                    break;
+                case SDLK_RETURN:
+                    memory.isInitialized = false;
                     break;
                 case SDLK_ESCAPE:
                     quit = true;

@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 
 #include "game.h"
 
@@ -114,8 +113,8 @@ void unloadGameCode(MacGameCode *gameCode)
 
 int main()
 {
-    const int WINDOW_WIDTH = 800;
-    const int WINDOW_HEIGHT = 450;
+    const int WINDOW_WIDTH = 960;
+    const int WINDOW_HEIGHT = 540;
     uint32_t ticksBefore = SDL_GetTicks();
     uint32_t ticksAfter = SDL_GetTicks();
     double delta = 0;

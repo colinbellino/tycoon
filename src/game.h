@@ -43,8 +43,8 @@ struct GameState
     MemoryArena worldArena;
     World *world;
 
-    int playerX;
-    int playerY;
+    uint32_t playerX;
+    uint32_t playerY;
 
     int windowWidth;
     int windowHeight;
