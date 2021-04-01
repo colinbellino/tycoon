@@ -5,6 +5,8 @@
         "algorithm": "cpp",
         "bitset": "cpp",
         "chrono": "cpp",
-        "unordered_map": "cpp"
+        "unordered_map": "cpp",
+        "typeinfo": "cpp",
+        "*.sh": "cpp"
     }
 }

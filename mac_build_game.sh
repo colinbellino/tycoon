@@ -1,6 +1,6 @@
 set -e
 
-echo "Building game..."
+echo "Building game (mac)..."
 gcc ./src/game.cpp -o ./build/game.o \
     -Wall \
     -g \

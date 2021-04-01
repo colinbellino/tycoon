@@ -16,11 +16,11 @@ done
 
 echo "=================================";
 if [ $hotReload == 1 ]; then
-    ./build-game-mac.sh
+    ./mac_build_game.sh
 fi
 
-echo "Building main..."
-gcc ./src/main-mac.cpp -o ./build/main \
+echo "Building tycoon (mac)..."
+gcc ./src/mac_game.cpp -o ./build/tycoon \
     -Wall \
     -g \
     -I ./include/mac/** \
@@ -30,5 +30,5 @@ gcc ./src/main-mac.cpp -o ./build/main \
 echo "=================================";
 
 if [ $run == 1 ]; then
-    ./build/main
+    ./build/tycoon
 fi

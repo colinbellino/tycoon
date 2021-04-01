@@ -2,8 +2,8 @@
 
 ## Build / run the game
 
-- Mac: `./build-mac.sh`
-- Windows: `./build-win.sh`
+- Mac: `./mac_build.sh`
+- Windows: `./win64_build.sh`
 
 Options:
 

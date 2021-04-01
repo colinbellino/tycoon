@@ -1,30 +1,24 @@
-#if !defined(MAIN_H)
+#if !defined(UTILS_H)
 
 #include <stdio.h>
 #include <time.h>
-
-#include "game.h"
 
 #define kilobytes(value) ((value)*1024LL)
 #define megabytes(value) (kilobytes(value) * 1024LL)
 #define gigabytes(value) (megabytes(value) * 1024LL)
 #define terabytes(value) (gigabytes(Value) * 1024LL)
 
+#define arrayCount(array) (sizeof(array) / sizeof((array)[0]))
+
 #define print(...)       \
     printf(__VA_ARGS__); \
     fflush(stdout);
 
-int gameStartStub(GameMemory *memory)
-{
-    printf("Using stub for game.start()\n");
-    return 1;
-}
-
-int gameUpdateStub(GameMemory *memory, GameInput input)
-{
-    printf("Using stub for game.update()\n");
-    return 1;
-}
+#define assert(expression, message)                                                    \
+    if (expression == 0)                                                               \
+    {                                                                                  \
+        printf("Assertion failed in %s, line %d: %s.\n", __FILE__, __LINE__, message); \
+    }
 
 void printTime(const char *prefix, time_t time)
 {
@@ -34,5 +28,5 @@ void printTime(const char *prefix, time_t time)
     date[0] = 0;
 }
 
-#define MAIN_H
+#define UTILS_H
 #endif

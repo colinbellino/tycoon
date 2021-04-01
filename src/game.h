@@ -2,8 +2,21 @@
 
 #include <stdint.h>
 
-#include "memory.h"
-#include "utils.h"
+#include "game_memory.h"
+#include "game_utils.h"
+#include "game_tilemap.h"
+
+struct SDLStuff
+{
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDL_Surface *screenSurface;
+    SDL_Texture *rectTexture;
+    SDL_Texture *spriteTexture;
+
+    SDL_Texture *texture1;
+    SDL_Texture *texture2;
+};
 
 struct GameMemory
 {
@@ -22,22 +35,16 @@ struct GameMemory
 struct World
 {
     bool isOn;
+    TileMap *tileMap;
 };
 
-// TODO: Don't use SDL directly inside the game code
 struct GameState
 {
     MemoryArena worldArena;
     World *world;
 
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    SDL_Surface *screenSurface;
-    SDL_Texture *rectTexture;
-    SDL_Texture *spriteTexture;
-
-    SDL_Texture *texture1;
-    SDL_Texture *texture2;
+    int playerX;
+    int playerY;
 
     int windowWidth;
     int windowHeight;
@@ -48,10 +55,7 @@ struct GameInput
     bool spaceWasPressedThisFrame;
 };
 
-#define GAME_START(name) int name(GameMemory *memory)
-typedef GAME_START(GameStart);
-
-#define GAME_UPDATE(name) int name(GameMemory *memory, GameInput input)
+#define GAME_UPDATE(name) int name(GameMemory *memory, GameInput input, SDLStuff *sdl)
 typedef GAME_UPDATE(GameUpdate);
 
 #define GAME_H
